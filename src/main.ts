@@ -1,8 +1,23 @@
-import { NestFactory } from '@nestjs/core';
+import { Logger } from 'nestjs-pino';
+import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { ConfigService } from '@nestjs/config';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+
+  app.useLogger(app.get(Logger));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(
+    new PrismaClientExceptionFilter(httpAdapter, {
+      P2002: HttpStatus.UNPROCESSABLE_ENTITY,
+    }),
+  );
+
+  await app.listen(app.get(ConfigService).getOrThrow('PORT'));
 }
 bootstrap();
