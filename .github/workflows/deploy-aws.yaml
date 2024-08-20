@@ -38,7 +38,7 @@ jobs:
         run: docker build -t ${{ steps.login-ecr.outputs.registry }}/teddy:${{ github.run_id }} -t ${{ steps.login-ecr.outputs.registry }}/teddy:latest .
 
       - name: Push the Docker image to Amazon ECR
-        run: docker push - all-tags ${{ steps.login-ecr.outputs.registry }}/teddy
+        run: docker push --all-tags ${{ steps.login-ecr.outputs.registry }}/teddy
 
   deploy:
     needs: build
@@ -57,7 +57,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: ${{ env.ELASTIC_BEANSTALK_NAME }}
           environment_name: ${{ env.ELASTIC_BEANSTALK_ENV_NAME }}
-          version_label: ${{ env.PIPELINE_ID }}
+          version_label: ${{ github.run_id }}
           use_existing_version_if_available: true
           region: ${{ env.AWS_REGION }}
           deployment_package: deploy.zip
