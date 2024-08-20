@@ -1,5 +1,5 @@
 {
-  "AWSEBDockerrunVersion": "1",
+  "AWSEBDockerrunVersion": "3",
   "Image": {
     "Image" : {
       "Name": "084850041844.dkr.ecr.sa-east-1.amazonaws.com/teddy:latest",
