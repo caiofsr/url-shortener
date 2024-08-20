@@ -4,11 +4,9 @@ import { TestBed } from '@automock/jest';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 describe.only('AuthService', () => {
   let service: AuthService;
-  let prismaService: jest.Mocked<PrismaService>;
   let userService: jest.Mocked<UsersService>;
   let jwtService: jest.Mocked<JwtService>;
 
@@ -16,35 +14,12 @@ describe.only('AuthService', () => {
     const { unit, unitRef } = TestBed.create(AuthService).compile();
 
     service = unit;
-    prismaService = unitRef.get<PrismaService>(PrismaService);
     userService = unitRef.get<UsersService>(UsersService);
     jwtService = unitRef.get<JwtService>(JwtService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-  });
-
-  it('should create user', async () => {
-    const createUserDto = {
-      email: 'testing@example.com',
-      password: 'Testing@123',
-    };
-
-    prismaService.user.create = jest.fn().mockImplementation(() => {
-      return {
-        email: createUserDto.email,
-        id: 1,
-      };
-    });
-
-    const user = await service.createUser({
-      email: createUserDto.email,
-      password: createUserDto.password,
-    });
-
-    expect(user).toEqual({ email: createUserDto.email, id: 1 });
-    expect(prismaService.user.create).toHaveBeenCalledTimes(1);
   });
 
   it('should verify user', async () => {
@@ -96,7 +71,7 @@ describe.only('AuthService', () => {
 
     jwtService.sign.mockImplementation(() => 'signedToken');
 
-    expect(await service.signin(user, response)).toEqual({ tokenPayload: { userId: user.id } });
+    expect(await service.signin(user, response)).toEqual({ tokenPayload: { userId: user.id, email: user.email } });
     expect(response.cookie).toHaveBeenCalledTimes(1);
     expect(jwtService.sign).toHaveBeenCalledTimes(1);
   });

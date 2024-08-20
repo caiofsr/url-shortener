@@ -43,4 +43,26 @@ describe('UsersService', () => {
       Prisma.PrismaClientKnownRequestError,
     );
   });
+
+  it('should create user', async () => {
+    const createUserDto = {
+      email: 'testing@example.com',
+      password: 'Testing@123',
+    };
+
+    prismaService.user.create = jest.fn().mockImplementation(() => {
+      return {
+        email: createUserDto.email,
+        id: 1,
+      };
+    });
+
+    const user = await service.createUser({
+      email: createUserDto.email,
+      password: createUserDto.password,
+    });
+
+    expect(user).toEqual({ email: createUserDto.email, id: 1 });
+    expect(prismaService.user.create).toHaveBeenCalledTimes(1);
+  });
 });

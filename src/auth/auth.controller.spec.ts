@@ -2,16 +2,19 @@ import { response } from 'express';
 import { TestBed } from '@automock/jest';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { UsersService } from 'src/users/users.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
   let authService: jest.Mocked<AuthService>;
+  let usersService: jest.Mocked<UsersService>;
 
   beforeEach(async () => {
     const { unit, unitRef } = TestBed.create(AuthController).compile();
 
     controller = unit;
     authService = unitRef.get<AuthService>(AuthService);
+    usersService = unitRef.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
@@ -24,7 +27,7 @@ describe('AuthController', () => {
       password: 'Testing@123',
     };
 
-    authService.createUser = jest.fn().mockImplementation(() => {
+    usersService.createUser = jest.fn().mockImplementation(() => {
       return {
         email: createUserDto.email,
         id: 1,
@@ -47,12 +50,14 @@ describe('AuthController', () => {
     authService.signin.mockResolvedValue({
       tokenPayload: {
         userId: signinUserDto.id,
+        email: signinUserDto.email,
       },
     });
 
     expect(await controller.signin(signinUserDto, response)).toEqual({
       tokenPayload: {
         userId: signinUserDto.id,
+        email: signinUserDto.email,
       },
     });
   });

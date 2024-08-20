@@ -1,17 +1,14 @@
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { User } from '@prisma/client';
-import { SignupDto } from './dtos/signup.dto';
 import { JwtService } from '@nestjs/jwt/dist';
 import { UsersService } from 'src/users/users.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { TokenPayload } from './interfaces/token-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prismaService: PrismaService,
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
@@ -46,18 +43,5 @@ export class AuthService {
     }
 
     return user;
-  }
-
-  async createUser(data: SignupDto) {
-    return await this.prismaService.user.create({
-      data: {
-        ...data,
-        password: await bcrypt.hash(data.password, 10),
-      },
-      select: {
-        email: true,
-        id: true,
-      },
-    });
   }
 }
