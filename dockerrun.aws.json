@@ -1,8 +1,10 @@
 {
-  "AWSEBDockerrunVersion": "3",
+  "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "deploy.zip",
-    "Image" : "084850041844.dkr.ecr.sa-east-1.amazonaws.com/teddy:latest"
+    "Image" : {
+      "Name": "084850041844.dkr.ecr.sa-east-1.amazonaws.com/teddy:latest",
+      "Update": "true"
+    }
   },
   "Ports": [{ "ContainerPort": "3333" }]
 }
