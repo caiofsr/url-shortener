@@ -8,7 +8,7 @@ on:
      - '**'
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: sa-east-1
   ELASTIC_BEANSTALK_NAME: urlshortner-api
   ELASTIC_BEANSTALK_ENV_NAME: Urlshortner-api-env
 
