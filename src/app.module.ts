@@ -3,6 +3,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { HealthController } from './health.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
@@ -32,6 +33,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     PrismaModule,
     UsersModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
 })
 export class AppModule {}
