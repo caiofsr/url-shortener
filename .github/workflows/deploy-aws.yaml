@@ -12,6 +12,9 @@ env:
   ELASTIC_BEANSTALK_ENV_NAME: Urlshortner-api-env
 
 jobs:
+  tests:
+    uses: ./github/workflows/tests.yaml
+
   build:
     needs: tests
     runs-on: ubuntu-latest

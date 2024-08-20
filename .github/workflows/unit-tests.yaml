@@ -3,9 +3,10 @@ name: Run unit tests
 
 on:
   workflow_dispatch:
+  workflow_call:
   push:
     branches:
-      - "**"
+      - "main"
 
 jobs:
   tests:
