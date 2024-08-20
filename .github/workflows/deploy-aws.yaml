@@ -13,7 +13,7 @@ env:
 
 jobs:
   tests:
-    uses: ./github/workflows/tests.yaml
+    uses: ./github/workflows/unit-tests.yaml
 
   build:
     needs: tests
