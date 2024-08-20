@@ -1,6 +1,7 @@
 name: Build and Deploy to Elastic Beanstalk
 
 on:
+  workflow_dispatch:
   push:
     tags:
      - '**'
