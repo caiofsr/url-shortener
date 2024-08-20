@@ -1,9 +1,10 @@
 import { Logger } from 'nestjs-pino';
-import { PrismaClientExceptionFilter } from 'nestjs-prisma';
+import { AppModule } from './app.module';
+import cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
+import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +18,8 @@ async function bootstrap() {
       P2002: HttpStatus.UNPROCESSABLE_ENTITY,
     }),
   );
+
+  app.use(cookieParser());
 
   await app.listen(app.get(ConfigService).getOrThrow('PORT'));
 }
