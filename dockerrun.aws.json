@@ -1,0 +1,7 @@
+{
+  "AWSEBDockerrunVersion": "3",
+  "Image": {
+    "Name": "084850041844.dkr.ecr.sa-east-1.amazonaws.com/teddy:latest"
+  },
+  "Ports": [{ "ContainerPort": "3333" }]
+}
