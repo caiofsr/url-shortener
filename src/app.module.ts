@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ConfigModule.forRoot(),
     AuthModule,
     PrismaModule,
+    UsersModule,
   ],
   controllers: [],
 })

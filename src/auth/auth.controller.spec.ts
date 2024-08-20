@@ -1,6 +1,7 @@
+import { response } from 'express';
 import { TestBed } from '@automock/jest';
-import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -33,6 +34,26 @@ describe('AuthController', () => {
     expect(await controller.signup(createUserDto)).toEqual({
       email: createUserDto.email,
       id: 1,
+    });
+  });
+
+  it('should signin an user', async () => {
+    const signinUserDto = {
+      id: 1,
+      email: 'testing@example.com',
+      password: 'Testing@123',
+    };
+
+    authService.signin.mockResolvedValue({
+      tokenPayload: {
+        userId: signinUserDto.id,
+      },
+    });
+
+    expect(await controller.signin(signinUserDto, response)).toEqual({
+      tokenPayload: {
+        userId: signinUserDto.id,
+      },
     });
   });
 });
