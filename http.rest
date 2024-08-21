@@ -1,3 +1,4 @@
+-- Active: 1720308400574@@127.0.0.1@5432@urlshortener
 POST http://localhost:3333/auth/signup
 Content-Type: application/json
 
@@ -20,8 +21,12 @@ Content-Type: application/json
 
 POST http://localhost:3333/links
 Content-Type: application/json
-Cookie: Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoialFwYUBleGFtcGxlLmNvbSIsImlhdCI6MTcyNDIxNTM4NywiZXhwIjoxNzI0MjUxMzg3fQ.9YeoPguXtCGVK_FCZAGPKBUyDA7KjvWBaRlBMl0AoRg; Path=/; Expires=Thu, 22 Aug 2024 04:43:07 GMT; HttpOnly; Secure
+Cookie: Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoialFwYUBleGFtcGxlLmNvbSIsImlhdCI6MTcyNDI1NjE1NiwiZXhwIjoxNzI0MjkyMTU2fQ.8vQH2cFSFnfLzXV_7xLRcfxeBzBB-ZiHxqp9zKKxYMk; Path=/; Expires=Thu, 22 Aug 2024 16:02:36 GMT; HttpOnly; Secure
 
 {
-  "url": "https://google.com"
+  "url": "https://teddy360.com.br/material/marco-legal-das-garantias-sancionado-entenda-o-que-muda/"
 }
+
+
+###
+GET http://localhost:3333/3u6m63

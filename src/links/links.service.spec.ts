@@ -2,6 +2,8 @@ import { TestBed } from '@automock/jest';
 import { PrismaService } from 'nestjs-prisma';
 import { LinksService } from './links.service';
 import { UsersService } from 'src/users/users.service';
+import { NotFoundException } from '@nestjs/common';
+import { Link } from '@prisma/client';
 
 describe('LinksService', () => {
   let service: LinksService;
@@ -76,5 +78,47 @@ describe('LinksService', () => {
         email: 'testing@example.com',
       },
     });
+  });
+
+  it('should get a link', async () => {
+    prismaService.link.findUniqueOrThrow = jest.fn().mockImplementation(() => {
+      return {
+        id: 1,
+        url: 'https://testing.com',
+        slug: 'testing',
+      };
+    });
+
+    const link = await service.getLink({
+      slug: 'testing',
+    });
+
+    expect(link).toEqual({
+      id: 1,
+      url: 'https://testing.com',
+      slug: 'testing',
+    });
+  });
+
+  it('should throw if link is not found', async () => {
+    prismaService.link.findUniqueOrThrow = jest.fn().mockImplementation(() => {
+      throw new NotFoundException({
+        statusCode: 404,
+        message: '[P2025]: No Link found',
+      });
+    });
+
+    await expect(service.getLink({ slug: 'testing' })).rejects.toThrow(NotFoundException);
+  });
+
+  it('should update clicks count', async () => {
+    prismaService.link.update = jest.fn().mockImplementation(() => {});
+
+    await service.updateClicksCount({
+      id: 1,
+      clicks: 1,
+    } as Link);
+
+    expect(prismaService.link.update).toHaveBeenCalledTimes(1);
   });
 });
