@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
+import { ConfigService } from '@nestjs/config';
 import { Link, Prisma, User } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { CreateLinkDto } from './dtos/shorten-link.dto';
@@ -11,6 +12,7 @@ export class LinksService {
   constructor(
     protected readonly usersService: UsersService,
     protected readonly prismaService: PrismaService,
+    protected readonly configService: ConfigService,
   ) {}
 
   async getLinks(user: TokenPayload) {
@@ -38,7 +40,7 @@ export class LinksService {
       userExists = await this.usersService.getUser({ id: user.userId });
     }
 
-    return await this.prismaService.link.create({
+    const link = await this.prismaService.link.create({
       data: {
         url,
         slug: nanoid(6),
@@ -56,5 +58,9 @@ export class LinksService {
         },
       },
     });
+
+    const host = this.configService.getOrThrow('HOST');
+
+    return { link: `${host}/${link.slug}` };
   }
 }
