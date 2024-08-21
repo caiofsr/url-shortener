@@ -155,7 +155,7 @@ describe('LinksService', () => {
 
   describe('deleteLink', () => {
     it('should delete a link', async () => {
-      prismaService.link.findUnique = jest.fn().mockImplementation(() => {
+      prismaService.link.findUniqueOrThrow = jest.fn().mockImplementation(() => {
         return {
           id: 1,
           url: 'https://testing.com',
@@ -175,11 +175,16 @@ describe('LinksService', () => {
       });
 
       expect(prismaService.link.update).toHaveBeenCalledTimes(1);
-      expect(prismaService.link.findUnique).toHaveBeenCalledTimes(1);
+      expect(prismaService.link.findUniqueOrThrow).toHaveBeenCalledTimes(1);
     });
 
     it('should throw if link is not found', async () => {
-      prismaService.link.findUnique = jest.fn().mockImplementation(() => null);
+      prismaService.link.findUniqueOrThrow = jest.fn().mockImplementation(() => {
+        throw new NotFoundException({
+          statusCode: 404,
+          message: '[P2025]: No Link found',
+        });
+      });
       prismaService.link.update = jest.fn().mockImplementation(() => {});
 
       await expect(
@@ -193,11 +198,11 @@ describe('LinksService', () => {
       ).rejects.toThrow(NotFoundException);
 
       expect(prismaService.link.update).toHaveBeenCalledTimes(0);
-      expect(prismaService.link.findUnique).toHaveBeenCalledTimes(1);
+      expect(prismaService.link.findUniqueOrThrow).toHaveBeenCalledTimes(1);
     });
 
     it('should throw if user not own link', async () => {
-      prismaService.link.findUnique = jest.fn().mockImplementation(() => {
+      prismaService.link.findUniqueOrThrow = jest.fn().mockImplementation(() => {
         return {
           id: 1,
           url: 'https://testing.com',
@@ -219,11 +224,11 @@ describe('LinksService', () => {
       ).rejects.toThrow(UnauthorizedException);
 
       expect(prismaService.link.update).toHaveBeenCalledTimes(0);
-      expect(prismaService.link.findUnique).toHaveBeenCalledTimes(1);
+      expect(prismaService.link.findUniqueOrThrow).toHaveBeenCalledTimes(1);
     });
 
     it('should throw if link already deleted', async () => {
-      prismaService.link.findUnique = jest.fn().mockImplementation(() => {
+      prismaService.link.findUniqueOrThrow = jest.fn().mockImplementation(() => {
         return {
           id: 1,
           url: 'https://testing.com',
@@ -245,7 +250,96 @@ describe('LinksService', () => {
       ).rejects.toThrow(BadRequestException);
 
       expect(prismaService.link.update).toHaveBeenCalledTimes(0);
-      expect(prismaService.link.findUnique).toHaveBeenCalledTimes(1);
+      expect(prismaService.link.findUniqueOrThrow).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('updateLink', () => {
+    it('should update link', async () => {
+      prismaService.link.update = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          url: 'https://testing2.com',
+          slug: 'testing',
+          userId: 1,
+        };
+      });
+      prismaService.link.findUniqueOrThrow = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          url: 'https://testing.com',
+          slug: 'testing',
+          userId: 1,
+        };
+      });
+
+      const link = await service.updateLink({
+        id: 1,
+        url: 'https://testing2.com',
+        user: {
+          userId: 1,
+          email: 'testing@example.com',
+        },
+      });
+
+      expect(link).toEqual({
+        id: 1,
+        url: 'https://testing2.com',
+        slug: 'testing',
+        userId: 1,
+      });
+      expect(prismaService.link.update).toHaveBeenCalledTimes(1);
+      expect(prismaService.link.findUniqueOrThrow).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw if link is not found', async () => {
+      prismaService.link.findUniqueOrThrow = jest.fn().mockImplementation(() => {
+        throw new NotFoundException({
+          statusCode: 404,
+          message: '[P2025]: No Link found',
+        });
+      });
+      prismaService.link.update = jest.fn().mockImplementation(() => {});
+
+      await expect(
+        service.updateLink({
+          id: 1,
+          url: 'https://testing2.com',
+          user: {
+            userId: 1,
+            email: 'testing@example.com',
+          },
+        }),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(prismaService.link.update).toHaveBeenCalledTimes(0);
+      expect(prismaService.link.findUniqueOrThrow).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw if link is owned by user', async () => {
+      prismaService.link.findUniqueOrThrow = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          url: 'https://testing2.com',
+          slug: 'testing',
+          userId: 2,
+        };
+      });
+      prismaService.link.update = jest.fn().mockImplementation(() => {});
+
+      await expect(
+        service.updateLink({
+          id: 1,
+          url: 'https://testing2.com',
+          user: {
+            userId: 1,
+            email: 'testing@example.com',
+          },
+        }),
+      ).rejects.toThrow(UnauthorizedException);
+
+      expect(prismaService.link.update).toHaveBeenCalledTimes(0);
+      expect(prismaService.link.findUniqueOrThrow).toHaveBeenCalledTimes(1);
     });
   });
 });

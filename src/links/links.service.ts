@@ -5,7 +5,7 @@ import { Link, Prisma, User } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { CreateLinkDto } from './dtos/shorten-link.dto';
 import { TokenPayload } from 'src/auth/interfaces/token-payload.interface';
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class LinksService {
@@ -15,13 +15,27 @@ export class LinksService {
     protected readonly configService: ConfigService,
   ) {}
 
+  async updateLink({ id, url, user }: { id: number; url: string; user: TokenPayload }) {
+    const link = await this.prismaService.link.findUniqueOrThrow({
+      where: { id, deletedAt: null },
+    });
+
+    if (link.userId !== user.userId) {
+      throw new UnauthorizedException('You are not allowed to perform this action');
+    }
+
+    return await this.prismaService.link.update({
+      where: { id },
+      data: {
+        url,
+      },
+    });
+  }
+
   async deleteLink({ id, user }: { id: number; user: TokenPayload }) {
-    const link = await this.prismaService.link.findUnique({
+    const link = await this.prismaService.link.findUniqueOrThrow({
       where: { id },
     });
-    if (!link) {
-      throw new NotFoundException('Link not found');
-    }
 
     if (link.userId !== user.userId) {
       throw new UnauthorizedException('You are not allowed to perform this action');

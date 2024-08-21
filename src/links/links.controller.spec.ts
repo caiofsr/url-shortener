@@ -132,4 +132,47 @@ describe('LinksController', () => {
       expect(linksService.deleteLink).toHaveBeenCalledTimes(0);
     });
   });
+
+  describe('updateLink', () => {
+    it('should update link', async () => {
+      linksService.updateLink.mockResolvedValue({
+        id: 1,
+        url: 'https://testing2.com',
+        slug: 'testing',
+        userId: 1,
+        clicks: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      const link = await controller.updateLink(
+        '1',
+        {
+          url: 'https://testing2.com',
+        },
+        {
+          userId: 1,
+          email: 'testing@example.com',
+        },
+      );
+
+      expect(link).toEqual({
+        id: 1,
+        url: 'https://testing2.com',
+        slug: 'testing',
+        userId: 1,
+        clicks: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      });
+      expect(linksService.updateLink).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw if user is not logged in', async () => {
+      expect(() => controller.updateLink('1', { url: 'https://testing2.com' })).rejects.toThrow(UnauthorizedException);
+      expect(linksService.updateLink).toHaveBeenCalledTimes(0);
+    });
+  });
 });
