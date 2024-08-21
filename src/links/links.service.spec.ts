@@ -1,7 +1,7 @@
 import { TestBed } from '@automock/jest';
+import { PrismaService } from 'nestjs-prisma';
 import { LinksService } from './links.service';
 import { UsersService } from 'src/users/users.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('LinksService', () => {
   let service: LinksService;

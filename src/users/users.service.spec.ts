@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { TestBed } from '@automock/jest';
+import { PrismaService } from 'nestjs-prisma';
 import { UsersService } from './users.service';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('UsersService', () => {
   let service: UsersService;
