@@ -4,11 +4,13 @@ import { PrismaModule } from 'nestjs-prisma';
 import { AuthModule } from './auth/auth.module';
 import { LinksModule } from './links/links.module';
 import { UsersModule } from './users/users.module';
+import { SentryModule } from '@sentry/nestjs/setup';
 import { HealthController } from './health.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     LoggerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {

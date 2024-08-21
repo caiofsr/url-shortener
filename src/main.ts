@@ -1,3 +1,5 @@
+import './instrument';
+
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';

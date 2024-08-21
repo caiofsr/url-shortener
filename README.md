@@ -36,6 +36,9 @@ Após instalar as dependências e com o banco rodando no docker utilize o prisma
 $ npx prisma migrate dev
 ```
 
+### Sentry
+Para desabilitar o sentry você só precisar deixar explicito que o `NODE_ENV` é de `development`
+
 ## Build and run the project
 
 ```bash
