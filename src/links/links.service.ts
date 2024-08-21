@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
-import { Link, Prisma, User } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
+import { Link, Prisma, User } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { CreateLinkDto } from './dtos/shorten-link.dto';
 
@@ -11,6 +11,12 @@ export class LinksService {
     protected readonly usersService: UsersService,
     protected readonly prismaService: PrismaService,
   ) {}
+
+  async getLinks(user: Prisma.UserWhereUniqueInput) {
+    return await this.prismaService.link.findMany({
+      where: { userId: user.id },
+    });
+  }
 
   async getLink(filter: Prisma.LinkWhereUniqueInput) {
     return await this.prismaService.link.findUniqueOrThrow({ where: filter });

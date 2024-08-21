@@ -1,9 +1,9 @@
+import { Link } from '@prisma/client';
 import { TestBed } from '@automock/jest';
 import { PrismaService } from 'nestjs-prisma';
 import { LinksService } from './links.service';
-import { UsersService } from 'src/users/users.service';
 import { NotFoundException } from '@nestjs/common';
-import { Link } from '@prisma/client';
+import { UsersService } from 'src/users/users.service';
 
 describe('LinksService', () => {
   let service: LinksService;
@@ -120,5 +120,31 @@ describe('LinksService', () => {
     } as Link);
 
     expect(prismaService.link.update).toHaveBeenCalledTimes(1);
+  });
+
+  it('should get links', async () => {
+    const user = {
+      id: 1,
+      email: 'testing@example.com',
+    };
+
+    const link = {
+      id: 1,
+      url: 'https://testing.com',
+      slug: 'testing',
+      clicks: 0,
+      userId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    };
+
+    prismaService.link.findMany = jest.fn().mockImplementation(() => {
+      return [link];
+    });
+
+    const links = await service.getLinks(user);
+
+    expect(links).toEqual([link]);
   });
 });

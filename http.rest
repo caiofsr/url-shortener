@@ -30,3 +30,8 @@ Cookie: Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVt
 
 ###
 GET http://localhost:3333/3u6m63
+
+
+###
+GET http://localhost:3333/links
+Cookie: Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoialFwYUBleGFtcGxlLmNvbSIsImlhdCI6MTcyNDI1ODA1OCwiZXhwIjoxNzI0Mjk0MDU4fQ.b0y0U9yRAavIPy-7Gx2PdMQ7J_D15y2aHAif4_wtWx4; Path=/; Expires=Thu, 22 Aug 2024 16:34:18 GMT; HttpOnly; Secure

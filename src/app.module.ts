@@ -6,7 +6,6 @@ import { LinksModule } from './links/links.module';
 import { UsersModule } from './users/users.module';
 import { HealthController } from './health.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RedirectController } from './redirect.controller';
 
 @Module({
   imports: [
@@ -36,6 +35,6 @@ import { RedirectController } from './redirect.controller';
     UsersModule,
     LinksModule,
   ],
-  controllers: [RedirectController, HealthController],
+  controllers: [HealthController],
 })
 export class AppModule {}

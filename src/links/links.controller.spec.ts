@@ -1,6 +1,9 @@
+import { Response } from 'express';
 import { TestBed } from '@automock/jest';
 import { LinksService } from './links.service';
 import { LinksController } from './links.controller';
+import { UnauthorizedException } from '@nestjs/common';
+import { TokenPayload } from 'src/auth/interfaces/token-payload.interface';
 
 describe('LinksController', () => {
   let controller: LinksController;
@@ -59,5 +62,52 @@ describe('LinksController', () => {
         email: 'testing@example.com',
       },
     });
+  });
+
+  it('should get links', async () => {
+    const user: TokenPayload = {
+      userId: 1,
+      email: 'testing@example.com',
+    };
+
+    const link = {
+      id: 1,
+      url: 'https://testing.com',
+      slug: 'testing',
+      clicks: 0,
+      userId: user.userId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      deletedAt: null,
+    };
+
+    linksService.getLinks = jest.fn().mockImplementation(() => {
+      return [link];
+    });
+
+    const links = await controller.getLinks(user);
+
+    expect(links).toEqual([link]);
+  });
+
+  it('should throw if user is not logged in', async () => {
+    expect(() => controller.getLinks()).toThrow(UnauthorizedException);
+  });
+
+  it('should call redirect', async () => {
+    linksService.getLink = jest.fn().mockImplementation(() => {
+      return {
+        id: 1,
+        url: 'https://testing.com',
+        slug: 'testing',
+      };
+    });
+
+    const res = {} as unknown as Response;
+    res.redirect = jest.fn();
+
+    await controller.redirect('testing', res);
+
+    expect(res.redirect).toHaveBeenCalledWith('https://testing.com');
   });
 });
