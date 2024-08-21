@@ -4,6 +4,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { Link, Prisma, User } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { CreateLinkDto } from './dtos/shorten-link.dto';
+import { TokenPayload } from 'src/auth/interfaces/token-payload.interface';
 
 @Injectable()
 export class LinksService {
@@ -12,9 +13,9 @@ export class LinksService {
     protected readonly prismaService: PrismaService,
   ) {}
 
-  async getLinks(user: Prisma.UserWhereUniqueInput) {
+  async getLinks(user: TokenPayload) {
     return await this.prismaService.link.findMany({
-      where: { userId: user.id },
+      where: { userId: user.userId },
     });
   }
 
