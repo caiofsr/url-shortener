@@ -1,9 +1,9 @@
 import { nanoid } from 'nanoid';
 import { User } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 import { UsersService } from 'src/users/users.service';
 import { CreateLinkDto } from './dtos/shorten-link.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class LinksService {
