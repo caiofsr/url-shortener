@@ -14,10 +14,31 @@ datasource db {
 }
 
 model User {
-  id Int @default(autoincrement()) @id
-  email String @unique
+  id       Int    @id @default(autoincrement())
+  email    String @unique
   password String
+  links    Link[]
 
-  @@map("users")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   @@index([email])
+  @@map("users")
+}
+
+model Link {
+  id     Int    @id @default(autoincrement())
+  link   String
+  slug   String @unique
+  clicks Int    @default(0)
+
+  userId Int?  @map("user_id")
+  user   User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([slug, userId])
+  @@map("links")
 }
