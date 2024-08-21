@@ -45,6 +45,8 @@ describe('AuthController', () => {
       id: 1,
       email: 'testing@example.com',
       password: 'Testing@123',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     authService.signin.mockResolvedValue({

@@ -32,6 +32,8 @@ describe.only('AuthService', () => {
       id: 1,
       email: verifyUserDto.email,
       password: verifyUserDto.password,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     jest.spyOn(bcrypt, 'compare').mockImplementation(() => true);
@@ -50,6 +52,8 @@ describe.only('AuthService', () => {
       id: 1,
       email: verifyUserDto.email,
       password: verifyUserDto.password,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     jest.spyOn(bcrypt, 'compareSync').mockReturnValue(false);
@@ -63,6 +67,8 @@ describe.only('AuthService', () => {
       id: 1,
       email: 'testing@example.com',
       password: 'Testing@123',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     const response = {
