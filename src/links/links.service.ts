@@ -1,11 +1,11 @@
 import { nanoid } from 'nanoid';
-import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { ConfigService } from '@nestjs/config';
 import { Link, Prisma, User } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 import { CreateLinkDto } from './dtos/shorten-link.dto';
 import { TokenPayload } from 'src/auth/interfaces/token-payload.interface';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class LinksService {
@@ -15,21 +15,49 @@ export class LinksService {
     protected readonly configService: ConfigService,
   ) {}
 
+  async deleteLink({ id, user }: { id: number; user: TokenPayload }) {
+    const link = await this.prismaService.link.findUnique({
+      where: { id },
+    });
+    if (!link) {
+      throw new NotFoundException('Link not found');
+    }
+
+    if (link.userId !== user.userId) {
+      throw new UnauthorizedException('You are not allowed to perform this action');
+    }
+
+    if (link.deletedAt) {
+      throw new BadRequestException('Link already deleted');
+    }
+
+    await this.prismaService.link.update({
+      where: { id },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+
+    return;
+  }
+
   async getLinks(user: TokenPayload) {
     return await this.prismaService.link.findMany({
-      where: { userId: user.userId },
+      where: { userId: user.userId, deletedAt: null },
     });
   }
 
   async getLink(filter: Prisma.LinkWhereUniqueInput) {
-    return await this.prismaService.link.findUniqueOrThrow({ where: filter });
+    return await this.prismaService.link.findUniqueOrThrow({ where: { ...filter, deletedAt: null } });
   }
 
   async updateClicksCount(link: Link) {
     await this.prismaService.link.update({
       where: { id: link.id },
       data: {
-        clicks: link.clicks + 1,
+        clicks: {
+          increment: 1,
+        },
       },
     });
   }

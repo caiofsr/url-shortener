@@ -20,26 +20,41 @@ describe('LinksController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should shorten link without user', async () => {
-    linksService.createLink = jest.fn().mockImplementation(() => {
-      return {
+  describe('shortenLink', () => {
+    it('should shorten link without user', async () => {
+      linksService.createLink = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          url: 'https://testing.com',
+          slug: 'testing',
+        };
+      });
+
+      const link = await controller.shorten({ url: 'https://testing.com' });
+      expect(link).toEqual({
         id: 1,
         url: 'https://testing.com',
         slug: 'testing',
-      };
+      });
     });
 
-    const link = await controller.shorten({ url: 'https://testing.com' });
-    expect(link).toEqual({
-      id: 1,
-      url: 'https://testing.com',
-      slug: 'testing',
-    });
-  });
+    it('should shorten link with user', async () => {
+      linksService.createLink = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          url: 'https://testing.com',
+          slug: 'testing',
+          user: {
+            id: 1,
+            email: 'testing@example.com',
+          },
+        };
+      });
 
-  it('should shorten link with user', async () => {
-    linksService.createLink = jest.fn().mockImplementation(() => {
-      return {
+      const link = await controller.shorten({
+        url: 'https://testing.com',
+      });
+      expect(link).toEqual({
         id: 1,
         url: 'https://testing.com',
         slug: 'testing',
@@ -47,67 +62,74 @@ describe('LinksController', () => {
           id: 1,
           email: 'testing@example.com',
         },
-      };
+      });
     });
+  });
 
-    const link = await controller.shorten({
-      url: 'https://testing.com',
-    });
-    expect(link).toEqual({
-      id: 1,
-      url: 'https://testing.com',
-      slug: 'testing',
-      user: {
-        id: 1,
+  describe('getLinks', () => {
+    it('should get links', async () => {
+      const user: TokenPayload = {
+        userId: 1,
         email: 'testing@example.com',
-      },
-    });
-  });
+      };
 
-  it('should get links', async () => {
-    const user: TokenPayload = {
-      userId: 1,
-      email: 'testing@example.com',
-    };
-
-    const link = {
-      id: 1,
-      url: 'https://testing.com',
-      slug: 'testing',
-      clicks: 0,
-      userId: user.userId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-    };
-
-    linksService.getLinks = jest.fn().mockImplementation(() => {
-      return [link];
-    });
-
-    const links = await controller.getLinks(user);
-
-    expect(links).toEqual([link]);
-  });
-
-  it('should throw if user is not logged in', async () => {
-    expect(() => controller.getLinks()).toThrow(UnauthorizedException);
-  });
-
-  it('should call redirect', async () => {
-    linksService.getLink = jest.fn().mockImplementation(() => {
-      return {
+      const link = {
         id: 1,
         url: 'https://testing.com',
         slug: 'testing',
+        clicks: 0,
+        userId: user.userId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
       };
+
+      linksService.getLinks = jest.fn().mockImplementation(() => {
+        return [link];
+      });
+
+      const links = await controller.getLinks(user);
+
+      expect(links).toEqual([link]);
     });
 
-    const res = {} as unknown as Response;
-    res.redirect = jest.fn();
+    it('should throw if user is not logged in', async () => {
+      expect(() => controller.getLinks()).toThrow(UnauthorizedException);
+    });
+  });
 
-    await controller.redirect('testing', res);
+  describe('redirect', () => {
+    it('should call redirect', async () => {
+      linksService.getLink = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          url: 'https://testing.com',
+          slug: 'testing',
+        };
+      });
 
-    expect(res.redirect).toHaveBeenCalledWith('https://testing.com');
+      const res = {} as unknown as Response;
+      res.redirect = jest.fn();
+
+      await controller.redirect('testing', res);
+
+      expect(res.redirect).toHaveBeenCalledWith('https://testing.com');
+    });
+  });
+
+  describe('deleteLink', () => {
+    it('should delete link', async () => {
+      linksService.deleteLink.mockResolvedValue();
+
+      await controller.deleteLink('1', { userId: 1, email: 'testing@example.com' });
+      expect(linksService.deleteLink).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw if user is not logged in', async () => {
+      linksService.deleteLink.mockResolvedValue();
+
+      expect(() => controller.deleteLink('1')).rejects.toThrow(UnauthorizedException);
+      expect(linksService.deleteLink).toHaveBeenCalledTimes(0);
+    });
   });
 });

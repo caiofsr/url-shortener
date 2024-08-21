@@ -3,8 +3,8 @@ import { TestBed } from '@automock/jest';
 import { PrismaService } from 'nestjs-prisma';
 import { LinksService } from './links.service';
 import { ConfigService } from '@nestjs/config';
-import { NotFoundException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
+import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 describe('LinksService', () => {
   let service: LinksService;
@@ -125,29 +125,127 @@ describe('LinksService', () => {
     });
   });
 
-  it('should get links', async () => {
-    const user = {
-      userId: 1,
-      email: 'testing@example.com',
-    };
+  describe('getLinks', () => {
+    it('should get links', async () => {
+      const user = {
+        userId: 1,
+        email: 'testing@example.com',
+      };
 
-    const link = {
-      id: 1,
-      url: 'https://testing.com',
-      slug: 'testing',
-      clicks: 0,
-      userId: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-    };
+      const link = {
+        id: 1,
+        url: 'https://testing.com',
+        slug: 'testing',
+        clicks: 0,
+        userId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      };
 
-    prismaService.link.findMany = jest.fn().mockImplementation(() => {
-      return [link];
+      prismaService.link.findMany = jest.fn().mockImplementation(() => {
+        return [link];
+      });
+
+      const links = await service.getLinks(user);
+
+      expect(links).toEqual([link]);
+    });
+  });
+
+  describe('deleteLink', () => {
+    it('should delete a link', async () => {
+      prismaService.link.findUnique = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          url: 'https://testing.com',
+          slug: 'testing',
+          userId: 1,
+          deletedAt: null,
+        };
+      });
+      prismaService.link.update = jest.fn().mockImplementation(() => {});
+
+      await service.deleteLink({
+        id: 1,
+        user: {
+          userId: 1,
+          email: 'testing@example.com',
+        },
+      });
+
+      expect(prismaService.link.update).toHaveBeenCalledTimes(1);
+      expect(prismaService.link.findUnique).toHaveBeenCalledTimes(1);
     });
 
-    const links = await service.getLinks(user);
+    it('should throw if link is not found', async () => {
+      prismaService.link.findUnique = jest.fn().mockImplementation(() => null);
+      prismaService.link.update = jest.fn().mockImplementation(() => {});
 
-    expect(links).toEqual([link]);
+      await expect(
+        service.deleteLink({
+          id: 1,
+          user: {
+            userId: 1,
+            email: 'testing@example.com',
+          },
+        }),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(prismaService.link.update).toHaveBeenCalledTimes(0);
+      expect(prismaService.link.findUnique).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw if user not own link', async () => {
+      prismaService.link.findUnique = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          url: 'https://testing.com',
+          slug: 'testing',
+          userId: 1,
+          deletedAt: null,
+        };
+      });
+      prismaService.link.update = jest.fn().mockImplementation(() => {});
+
+      await expect(
+        service.deleteLink({
+          id: 1,
+          user: {
+            userId: 2,
+            email: 'testing@example.com',
+          },
+        }),
+      ).rejects.toThrow(UnauthorizedException);
+
+      expect(prismaService.link.update).toHaveBeenCalledTimes(0);
+      expect(prismaService.link.findUnique).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw if link already deleted', async () => {
+      prismaService.link.findUnique = jest.fn().mockImplementation(() => {
+        return {
+          id: 1,
+          url: 'https://testing.com',
+          slug: 'testing',
+          userId: 1,
+          deletedAt: new Date(),
+        };
+      });
+      prismaService.link.update = jest.fn().mockImplementation(() => {});
+
+      await expect(
+        service.deleteLink({
+          id: 1,
+          user: {
+            userId: 1,
+            email: 'testing@example.com',
+          },
+        }),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(prismaService.link.update).toHaveBeenCalledTimes(0);
+      expect(prismaService.link.findUnique).toHaveBeenCalledTimes(1);
+    });
   });
 });

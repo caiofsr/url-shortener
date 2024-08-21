@@ -4,7 +4,19 @@ import { ShortenLinkDto } from './dtos/shorten-link.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/ current-user.decorator';
 import { TokenPayload } from 'src/auth/interfaces/token-payload.interface';
-import { Body, Controller, Get, Param, Post, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 
 @Controller()
 export class LinksController {
@@ -24,6 +36,17 @@ export class LinksController {
     }
 
     return this.linksService.getLinks(user);
+  }
+
+  @Delete('/links/:id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteLink(@Param('id') id: string, @CurrentUser() user?: TokenPayload) {
+    if (!user) {
+      throw new UnauthorizedException('You are not allowed to access this resource');
+    }
+
+    await this.linksService.deleteLink({ id: Number.parseInt(id), user });
   }
 
   @Get(':slug')
