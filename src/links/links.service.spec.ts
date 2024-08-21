@@ -124,7 +124,7 @@ describe('LinksService', () => {
 
   it('should get links', async () => {
     const user = {
-      id: 1,
+      userId: 1,
       email: 'testing@example.com',
     };
 
