@@ -15,3 +15,13 @@ Content-Type: application/json
   "email": "jQpa@example.com",
   "password": "Testing@123"
 }
+
+###
+
+POST http://localhost:3333/links
+Content-Type: application/json
+Cookie: Authentication=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoialFwYUBleGFtcGxlLmNvbSIsImlhdCI6MTcyNDIxNTM4NywiZXhwIjoxNzI0MjUxMzg3fQ.9YeoPguXtCGVK_FCZAGPKBUyDA7KjvWBaRlBMl0AoRg; Path=/; Expires=Thu, 22 Aug 2024 04:43:07 GMT; HttpOnly; Secure
+
+{
+  "url": "https://google.com"
+}
