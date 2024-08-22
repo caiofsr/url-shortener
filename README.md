@@ -73,3 +73,4 @@ O projeto contem um pagina de documentação da API do swagger para acessa-lo, s
 - Adicionar uma camada de cache na busca de links
 - Adicionar tests e2e
 - Modularizar a aplicação para facilitar a manutenção, quando crescer
+- Melhorar o ambiente de desenvolvimento utilizando Dev containers
