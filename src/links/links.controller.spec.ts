@@ -135,14 +135,16 @@ describe('LinksController', () => {
 
   describe('updateLink', () => {
     it('should update link', async () => {
+      const date = new Date();
+
       linksService.updateLink.mockResolvedValue({
         id: 1,
         url: 'https://testing2.com',
         slug: 'testing',
         userId: 1,
         clicks: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: date,
+        updatedAt: date,
         deletedAt: null,
       });
 
@@ -163,8 +165,8 @@ describe('LinksController', () => {
         slug: 'testing',
         userId: 1,
         clicks: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: date,
+        updatedAt: date,
         deletedAt: null,
       });
       expect(linksService.updateLink).toHaveBeenCalledTimes(1);
